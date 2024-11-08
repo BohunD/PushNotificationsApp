@@ -12,10 +12,12 @@ import com.apps.pushnotificationsapp.presentation.newReminderScreen.newReminderS
 @Composable
 fun AppNavigation(
     navController: NavHostController,
-    startDestination: String = MAIN_SCREEN_ROUTE
+    startDestination: String = MAIN_SCREEN_ROUTE,
 ) {
-    NavHost(navController = navController, startDestination = startDestination ){
-        mainScreen { navController.navigateToNewReminder() }
+    NavHost(navController = navController, startDestination = startDestination) {
+        mainScreen(
+            onNewReminderClicked = {navController.navigateToNewReminder(-1)},
+            onEditReminderClicked = { navController.navigateToNewReminder(it) })
 
         newReminderScreen { navController.popBackStack() }
     }

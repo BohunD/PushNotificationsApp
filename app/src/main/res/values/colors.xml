@@ -15,4 +15,6 @@
     <color name="add_task_fill">#9DCCFF</color>
     <color name="dark_text">#1D1D1D</color>
     <color name="gray_bg">#F0F0F0</color>
+    <color name="black_text">#1D1D1D</color>
+    <color name="red_text">#FF6666</color>
 </resources>

@@ -1,22 +1,24 @@
-/*
-package com.apps.pushnotificationsapp.presentation.viewmodel
+package com.apps.pushnotificationsapp.presentation.mainScreen.viewmodel
 
 import androidx.compose.runtime.Immutable
+import com.apps.pushnotificationsapp.domain.model.Reminder
 
 interface MainScreenContract {
 
     @Immutable
     data class State(
-        val videosList: List<Hit> = mutableListOf(),
-        val isLoading: Boolean = true,
-        val error: String? = null,
-        val isConnected: Boolean = true
+        val currentRemindersList: List<Reminder> = listOf(),
+        //val selectedReminder: Reminder?=null
     )
 
     sealed interface Event {
-        data class ConnectionChanged(val isConnected: Boolean) : Event
+        data class DeleteReminder(val reminder: Reminder): Event
+        data class EditReminder(val reminder: Reminder): Event
+        data class CancelReminder(val reminder: Reminder): Event
+
+        data object FetchRemindersFromDB: Event
     }
 
     sealed interface Effect {
     }
-}*/
+}

@@ -12,7 +12,7 @@ interface NewReminderContract {
         val currentDay: String = "",
         val currentMonth: String = "",
         val currentYear: String = "",
-        val currentRepeatMode: String = "",
+        val currentRepeatMode: String = "Once",
 
         val isHourError: Boolean = false,
         val isMinuteError: Boolean = false,
@@ -20,6 +20,9 @@ interface NewReminderContract {
         val isMonthError: Boolean = false,
         val isYearError: Boolean = false,
         val isDateError: Boolean? = null,
+        val isSaved: Boolean? = null,
+
+        val reminderId: Int = -1
     )
 
     sealed interface Event {
@@ -31,12 +34,17 @@ interface NewReminderContract {
         data class SetCurrentYear(val year: String): Event
         data class SetCurrentRepeatMode(val repeatMode: String): Event
 
+        data class SetReminderId(val id: Int): Event
+        data class GetReminderInfo(val id: Int): Event
+
         data object ValidateHour: Event
         data object ValidateMinute: Event
         data object ValidateDay: Event
         data object ValidateMonth: Event
         data object ValidateYear: Event
         data object ValidateDate: Event
+
+        data object SaveReminder: Event
     }
 
     sealed interface Effect {

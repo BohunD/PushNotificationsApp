@@ -4,16 +4,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.apps.pushnotificationsapp.presentation.newReminderScreen.viewModel.NewReminderContract
-import com.apps.pushnotificationsapp.presentation.mainScreen.LogoText
+import com.apps.pushnotificationsapp.presentation.mainScreen.ui.LogoText
 import com.apps.pushnotificationsapp.R
 @Composable
 fun Header(
@@ -31,12 +30,13 @@ fun Header(
             onCloseScreen()
         }
         LogoText(modifier = Modifier)
-        ReminderIcon(R.drawable.ic_okay) {
-            //TODO save
-            event(NewReminderContract.Event.ValidateDate)
-            if (state.isDateError != null && state.isDateError == false) {
+        LaunchedEffect(key1 = state.isSaved, key2 = state.isDateError) {
+            if(state.isSaved==true){
                 onCloseScreen()
             }
+        }
+        ReminderIcon(R.drawable.ic_okay) {
+            event(NewReminderContract.Event.ValidateDate)
 
         }
 
@@ -44,7 +44,7 @@ fun Header(
 }
 
 @Composable
-private fun ReminderIcon(iconRes: Int, onClick: () -> Unit) {
+fun ReminderIcon(iconRes: Int, onClick: () -> Unit) {
     Icon(
         painter = painterResource(id = iconRes),
         contentDescription = null,
