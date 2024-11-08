@@ -1,11 +1,14 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
     namespace = "com.apps.pushnotificationsapp"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.apps.pushnotificationsapp"
@@ -59,6 +62,19 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
+    implementation (libs.androidx.hilt.navigation.fragment)
+    implementation (libs.androidx.navigation.compose)
+    implementation (libs.hilt.android)
+    implementation(libs.androidx.runtime.livedata)
+    implementation (libs.androidx.hilt.navigation.compose)
+    implementation (libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.room.common)
+    implementation(libs.androidx.room.ktx)
+    ksp (libs.androidx.room.compiler)
+    ksp(libs.hilt.android.compiler)
+
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
