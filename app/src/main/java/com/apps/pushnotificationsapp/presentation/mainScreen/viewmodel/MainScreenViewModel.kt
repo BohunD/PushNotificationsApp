@@ -10,6 +10,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,11 +22,19 @@ class MainScreenViewModel @Inject constructor(
     MainScreenContract.State(),
 ) {
     override fun event(event: MainScreenContract.Event) = when(event) {
-        is MainScreenContract.Event.CancelReminder -> TODO()
+        is MainScreenContract.Event.CancelReminder -> cancelReminderForToday(event.reminder)
         is MainScreenContract.Event.DeleteReminder -> deleteReminder(event.reminder)
-        is MainScreenContract.Event.EditReminder -> editReminder(event.reminder)
 
         MainScreenContract.Event.FetchRemindersFromDB -> fetchFromDB()
+    }
+
+    private fun cancelReminderForToday(reminder: Reminder){
+        viewModelScope.launch(Dispatchers.IO) {
+            val cancelledReminder = reminder.copy(cancellationDate = state.value.todayDate)
+            repository.updateReminder(cancelledReminder)
+            repository.cancelNotificationForToday(reminder, state.value.todayDate)
+            fetchFromDB()
+        }
     }
 
     private fun deleteReminder( reminder: Reminder){
@@ -33,16 +44,22 @@ class MainScreenViewModel @Inject constructor(
         }
     }
 
-    private fun editReminder(reminder: Reminder){
 
-    }
-
-    private fun fetchFromDB(){
+    private fun fetchFromDB() {
+        val today = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+        updateUiState{copy(todayDate = today)}
         viewModelScope.launch(Dispatchers.IO) {
-            val list = repository.getAllReminders()
-            withContext(Dispatchers.Main){
+            val list = repository.getAllReminders().map { reminder ->
+                if (reminder.cancellationDate == today) {
+                    reminder.copy(isCancelledToday = true)
+                } else {
+                    reminder.copy(cancellationDate = null)
+                }
+            }
+            withContext(Dispatchers.Main) {
                 updateUiState { copy(currentRemindersList = list) }
             }
         }
     }
+
 }

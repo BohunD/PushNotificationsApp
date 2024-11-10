@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.apps.pushnotificationsapp.data.db.ReminderDatabase
 import com.apps.pushnotificationsapp.data.db.ReminderDao
+import com.apps.pushnotificationsapp.data.notification.BootReceiver
+import com.apps.pushnotificationsapp.data.notification.NotificationScheduler
 import com.apps.pushnotificationsapp.data.repository.ReminderRepositoryImpl
 import com.apps.pushnotificationsapp.domain.repository.ReminderRepository
 import dagger.Module
@@ -33,9 +35,32 @@ object AppModule {
         return reminderDatabase.reminderDao()
     }
 
+
     @Provides
     @Singleton
-    fun provideReminderRepository(reminderDao: ReminderDao): ReminderRepository {
-        return ReminderRepositoryImpl(reminderDao)
+    fun provideBootReceiver(
+        notificationScheduler: NotificationScheduler,
+        repository: ReminderRepository,
+    ): BootReceiver {
+        return BootReceiver(notificationScheduler,repository)
     }
+
+    @Provides
+    @Singleton
+    fun provideNotificationScheduler(
+        @ApplicationContext context: Context
+    ): NotificationScheduler {
+        return NotificationScheduler(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideReminderRepository(
+        reminderDao: ReminderDao,
+        notificationScheduler: NotificationScheduler
+    ): ReminderRepository {
+        return ReminderRepositoryImpl(reminderDao, notificationScheduler)
+    }
+
+
 }

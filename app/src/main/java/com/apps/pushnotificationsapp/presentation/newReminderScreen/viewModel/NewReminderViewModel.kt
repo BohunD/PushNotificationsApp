@@ -13,6 +13,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+private const val UNDEFINED_ID = -1
+
 @HiltViewModel
 class NewReminderViewModel @Inject constructor(
     private val repository: ReminderRepository,
@@ -53,7 +55,6 @@ class NewReminderViewModel @Inject constructor(
                     val (hour, minute) = it.time.split(":")
                     val (day, month, year) = it.date.split("/")
 
-                    Log.d("GET_REMINDER", "MODE: ${reminder.repeatMode}")
                     withContext(Dispatchers.Main) {
                         updateUiState {
                             copy(
@@ -89,26 +90,30 @@ class NewReminderViewModel @Inject constructor(
             val time = "$hour:$minute"
 
             val date = "$currentDay/$currentMonth/$currentYear"
-            val reminder = if(reminderId ==-1)
-            Reminder(
-                title = currentTitle,
-                time = time,
-                date = date,
-                repeatMode = currentRepeatMode
-            ) else
-                Reminder(
-                    id = state.value.reminderId,
-                    title = currentTitle,
-                    time = time,
-                    date = date,
-                    repeatMode = currentRepeatMode
-                )
+
+
+
+
             viewModelScope.launch(Dispatchers.IO) {
                 try {
-                    if(state.value.reminderId!=-1){
-                        repository.updateReminder(reminder)
-                    }else
-                        repository.addReminder(reminder)
+                    if (reminderId != UNDEFINED_ID) {
+                        repository.updateReminder(Reminder(
+                            id = reminderId,
+                            title = currentTitle,
+                            time = time,
+                            date = date,
+                            repeatMode = currentRepeatMode
+                        ))
+                    } else {
+                        val newId = System.currentTimeMillis().toInt()
+                        repository.addReminder(Reminder(
+                            id = newId,
+                            title = currentTitle,
+                            time = time,
+                            date = date,
+                            repeatMode = currentRepeatMode
+                        ))
+                    }
                     withContext(Dispatchers.Main) {
                         updateUiState { copy(isSaved = true) }
                     }
@@ -203,27 +208,51 @@ class NewReminderViewModel @Inject constructor(
         val currentDateTime = System.currentTimeMillis()
 
         val selectedDateTime = with(state.value) {
-            val selectedYear = currentYear.toIntOrNull() ?: 0
-            val selectedMonth = currentMonth.toIntOrNull() ?: 0
-            val selectedDay = currentDay.toIntOrNull() ?: 0
-            val selectedHour = currentHour.toIntOrNull() ?: 0
-            val selectedMinute = currentMinute.toIntOrNull() ?: 0
+            val selectedYear = currentYear.toIntOrNull()
+            val selectedMonth = currentMonth.toIntOrNull()
+            val selectedDay = currentDay.toIntOrNull()
+            val selectedHour = currentHour.toIntOrNull()
+            val selectedMinute = currentMinute.toIntOrNull()
 
             val calendar = java.util.Calendar.getInstance().apply {
-                set(selectedYear, selectedMonth - 1, selectedDay, selectedHour, selectedMinute, 0)
+                set(
+                    selectedYear ?: 0,
+                    (selectedMonth ?: 1) - 1,
+                    selectedDay ?: 0,
+                    selectedHour ?: 0,
+                    selectedMinute ?: 0,
+                    0
+                )
             }
 
             calendar.timeInMillis
         }
 
-        val isDateValid =
-            ((selectedDateTime >= currentDateTime) && !state.value.isMinuteError && !state.value.isHourError && !state.value.isDayError && !state.value.isMonthError && !state.value.isYearError)
-        Log.d("IS_SAVED_CLICKED_VALIDATE", isDateValid.toString())
-        updateUiState {
-            copy(isDateError = !isDateValid)
+        if (state.value.isYearError) {
+            updateUiState { copy(dateError = "Invalid year") }
+        } else if (state.value.isMonthError) {
+            updateUiState { copy(dateError = "Invalid month.") }
+        } else if (state.value.isDayError) {
+            updateUiState { copy(dateError = "Invalid day.") }
+        } else if (state.value.isHourError) {
+            updateUiState { copy(dateError = "Invalid hour.") }
+        } else if (state.value.isMinuteError) {
+            updateUiState { copy(dateError = "Invalid minute.") }
+        }else if (selectedDateTime < currentDateTime) {
+            updateUiState { copy(dateError = "Selected date and time must be in the future.") }
         }
-        saveReminder()
+        else {
+            updateUiState { copy(dateError = null) }
+        }
+
+
+
+        if (state.value.dateError == null) {
+            saveReminder()
+        }
     }
+
 }
+
 
 

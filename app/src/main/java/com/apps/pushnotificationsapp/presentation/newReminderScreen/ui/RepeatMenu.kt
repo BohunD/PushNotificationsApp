@@ -35,10 +35,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import com.apps.pushnotificationsapp.R
+import com.apps.pushnotificationsapp.domain.model.RepeatMode
 
 @Composable
 fun RepeatMenu(
-    options: List<String> = listOf("Once", "Daily", "Mon to Fri"),
+    options: List<String> = listOf(RepeatMode.ONCE.displayName, RepeatMode.DAILY.displayName, RepeatMode.MON_TO_FRI.displayName),
     selectedOption: String,
     onOptionSelected: (String) -> Unit,
 ) {

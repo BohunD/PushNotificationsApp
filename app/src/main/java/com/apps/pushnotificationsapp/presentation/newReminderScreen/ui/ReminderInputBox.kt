@@ -31,6 +31,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -78,13 +79,18 @@ fun ReminderInputBox(
                     Font(R.font.alte_haas_grotesk_regular, FontWeight.W400),
                 )
 
-                InputFormTextIcon("Title", R.drawable.ic_pen, 12.dp, alteHaasRegularFont)
+                InputFormTextIcon(
+                    text = stringResource(R.string.title),
+                    iconId = R.drawable.ic_pen,
+                    iconSize = 12.dp,
+                    fontFamily = alteHaasRegularFont
+                )
                 CustomTextField(
                     Modifier
                         .fillMaxWidth(),
                     state.currentTitle,
                     13.sp,
-                    placeholder = "Insert Title",
+                    placeholder = stringResource(R.string.insert_title),
                     KeyboardType.Text,
                     isError = false,
                     validate = {}
@@ -94,7 +100,7 @@ fun ReminderInputBox(
                 InputDateSection(alteHaasRegularFont, state, event)
 
                 InputFormTextIcon(
-                    text = "Repeat",
+                    text = stringResource(R.string.repeat),
                     iconId = R.drawable.ic_repeat,
                     iconSize = 14.dp,
                     fontFamily = alteHaasRegularFont
@@ -119,7 +125,7 @@ fun ReminderInputBox(
                 )
         ) {
             Text(
-                text = "Make your own Reminder.",
+                text = stringResource(R.string.make_your_own_reminder),
                 fontFamily = alteHaasBoldFont,
                 fontSize = 18.sp,
                 color = Color.White,
@@ -226,7 +232,7 @@ private fun InputDateSection(
     ) {
         Column {
             InputFormTextIcon(
-                text = "Time",
+                text = stringResource(R.string.time),
                 iconId = R.drawable.ic_time,
                 15.dp,
                 alteHaasRegularFont
@@ -236,7 +242,7 @@ private fun InputDateSection(
                     modifier = Modifier.width(IntrinsicSize.Min),
                     value = state.currentHour,
                     fontSize = 18.sp,
-                    placeholder = "00",
+                    placeholder = stringResource(R.string._00),
                     keyboardType = KeyboardType.Number,
                     isError = state.isHourError,
                     validate = { event(NewReminderContract.Event.ValidateHour) }
@@ -254,7 +260,7 @@ private fun InputDateSection(
                     modifier = Modifier.width(IntrinsicSize.Min),
                     value = state.currentMinute,
                     fontSize = 18.sp,
-                    placeholder = "00",
+                    placeholder = stringResource(R.string._00),
                     keyboardType = KeyboardType.Number,
                     isError = state.isMinuteError,
                     validate = { event(NewReminderContract.Event.ValidateMinute) }
@@ -266,7 +272,7 @@ private fun InputDateSection(
 
         Column {
             InputFormTextIcon(
-                text = "Calendar",
+                text = stringResource(R.string.calendar),
                 iconId = R.drawable.ic_calendar,
                 16.dp,
                 alteHaasRegularFont
@@ -279,7 +285,7 @@ private fun InputDateSection(
                     modifier = Modifier.width(38.dp),
                     value = state.currentDay,
                     fontSize = 16.sp,
-                    placeholder = "dd",
+                    placeholder = stringResource(R.string.dd),
                     keyboardType = KeyboardType.Number,
                     isError = state.isDayError,
                     validate = { event(NewReminderContract.Event.ValidateDay) }
@@ -297,7 +303,7 @@ private fun InputDateSection(
                     modifier = Modifier.width(38.dp),
                     value = state.currentMonth,
                     fontSize = 16.sp,
-                    placeholder = "mm",
+                    placeholder = stringResource(R.string.mm),
                     keyboardType = KeyboardType.Number,
                     isError = state.isMonthError,
                     validate = { event(NewReminderContract.Event.ValidateMonth) }
@@ -315,7 +321,7 @@ private fun InputDateSection(
                     modifier = Modifier.width(50.dp),
                     value = state.currentYear,
                     fontSize = 16.sp,
-                    placeholder = "yyyy",
+                    placeholder = stringResource(R.string.yyyy),
                     keyboardType = KeyboardType.Number,
                     isError = state.isYearError,
                     validate = { event(NewReminderContract.Event.ValidateYear) }

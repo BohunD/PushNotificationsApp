@@ -21,6 +21,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -35,31 +37,48 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.apps.pushnotificationsapp.R
 import com.apps.pushnotificationsapp.domain.model.Reminder
 import com.apps.pushnotificationsapp.presentation.mainScreen.viewmodel.MainScreenContract
 import com.apps.pushnotificationsapp.presentation.mainScreen.viewmodel.MainScreenViewModel
 import com.apps.videolibrary.mvi.use
+import java.util.Locale
 
 @Composable
 fun MainScreen(
     onNewReminderClicked: () -> Unit,
-    onEditReminderClicked :(Int)->Unit
+    onEditReminderClicked: (Int) -> Unit,
 ) {
     val viewModel = hiltViewModel<MainScreenViewModel>()
     val (state, event) = use(viewModel)
-    LaunchedEffect(Unit) {
-        event(MainScreenContract.Event.FetchRemindersFromDB)
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                event(MainScreenContract.Event.FetchRemindersFromDB)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
     }
+
     var shouldBlur by remember {
         mutableStateOf(false)
     }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -67,8 +86,6 @@ fun MainScreen(
             .then(if (shouldBlur) Modifier.blur(3.dp) else Modifier),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-
         Header(state.currentRemindersList.isEmpty(), onAddTaskClick = { onNewReminderClicked() })
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
             HorizontalDivider(
@@ -95,14 +112,19 @@ fun MainScreen(
                 RemindersList(
                     reminders = state.currentRemindersList,
                     onDotsClicked = { shouldBlur = it },
-                    onEdit = { onEditReminderClicked(it.id) },
-                    onDelete = { event(MainScreenContract.Event.DeleteReminder(it)) }
+                    onEdit = {
+                        onEditReminderClicked(it.id) },
+                    onDelete = { event(MainScreenContract.Event.DeleteReminder(it)) },
+                    onCancel = { event(MainScreenContract.Event.CancelReminder(it)) },
+                    onDone = {
+                        event(MainScreenContract.Event.CancelReminder(it))
+                    },
                 )
             }
         }
-
     }
 }
+
 
 @Composable
 private fun RemindersList(
@@ -110,6 +132,8 @@ private fun RemindersList(
     onDotsClicked: (Boolean) -> Unit,
     onEdit: (Reminder) -> Unit,
     onDelete: (Reminder) -> Unit,
+    onCancel: (Reminder) -> Unit,
+    onDone: (Reminder) -> Unit,
 ) {
     LazyColumn(
         Modifier
@@ -122,7 +146,10 @@ private fun RemindersList(
                 reminder = reminder,
                 onDotsClicked,
                 onEdit = { onEdit(reminder) },
-                onDelete = { onDelete(reminder) })
+                onDelete = { onDelete(reminder) },
+                onCancel = { onCancel(reminder) },
+                onDone = { onDone(reminder) },
+            )
         }
     }
 }
@@ -133,6 +160,8 @@ private fun ReminderListItem(
     onDotsClicked: (Boolean) -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
+    onCancel: () -> Unit,
+    onDone: () -> Unit,
 ) {
     var showActions by remember {
         mutableStateOf(false)
@@ -214,6 +243,7 @@ private fun ReminderListItem(
                     fontSize = 26.sp,
                     color = colorResource(id = R.color.black_text),
                 )
+
                 Row(modifier = Modifier.padding(top = 10.dp)) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_okay),
@@ -222,7 +252,9 @@ private fun ReminderListItem(
                         modifier = Modifier
                             .size(35.dp)
                             .clip(RoundedCornerShape(100.dp))
-                            .clickable { }
+                                then (if (!reminder.isCancelledToday) {
+                            Modifier.clickable { onDone() }
+                        } else Modifier.alpha(0.5f))
                     )
                     Icon(
                         painter = painterResource(id = R.drawable.ic_cancel),
@@ -232,12 +264,14 @@ private fun ReminderListItem(
                             .padding(start = 10.dp)
                             .size(35.dp)
                             .clip(RoundedCornerShape(100.dp))
-                            .clickable { }
+                                then (if (!reminder.isCancelledToday) {
+                            Modifier.clickable { onCancel() }
+                        } else Modifier.alpha(0.5f))
 
                     )
                 }
-
             }
+
 
         }
     }
@@ -289,7 +323,7 @@ fun LogoText(modifier: Modifier) {
         Font(R.font.coolvetica_condensed_rg, FontWeight.W400),
     )
     Text(
-        text = "TestReminder",
+        text = stringResource(R.string.testreminder),
         fontSize = 28.sp,
         fontFamily = coolveticaCondensedFont,
         modifier = modifier
@@ -322,7 +356,7 @@ private fun AddTaskButton(modifier: Modifier, coolveticaFont: FontFamily, onClic
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Add Task",
+                    text = stringResource(R.string.add_task),
                     fontWeight = FontWeight.W400,
                     fontSize = 10.sp,
                     lineHeight = 10.sp,
@@ -346,8 +380,8 @@ fun formatDate(date: String): String {
     val parts = date.split("/")
     if (parts.size != 3) return date
 
-    val day = String.format("%02d", parts[0].toInt())
-    val month = String.format("%02d", parts[1].toInt())
+    val day = String.format(Locale.getDefault(), "%02d", parts[0].toInt())
+    val month = String.format(Locale.getDefault(), "%02d", parts[1].toInt())
     val year = parts[2]
 
     return "$day/$month/$year"
@@ -357,8 +391,8 @@ fun formatTime(time: String): String {
     try {
         val parts = time.split(":")
         if (parts.size != 2) return time
-        val hour = String.format("%02d", parts[0].toInt())
-        val minute = String.format("%02d", parts[1].toInt())
+        val hour = String.format(Locale.getDefault(), "%02d", parts[0].toInt())
+        val minute = String.format(Locale.getDefault(), "%02d", parts[1].toInt())
 
         return "$hour:$minute"
     } catch (e: Exception) {

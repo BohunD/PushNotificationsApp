@@ -21,11 +21,11 @@ fun NewReminderScreen(id: Int, onCloseScreen: () -> Unit) {
     val viewModel = hiltViewModel<NewReminderViewModel>()
     val (state, event) = use(viewModel)
     val context = LocalContext.current
-    LaunchedEffect(state.isDateError) {
-        if (state.isDateError == true) {
+    LaunchedEffect(state.dateError) {
+        if (state.dateError != null) {
             Toast.makeText(
                 context,
-                "Can not create reminder.\nCheck your data and try again",
+                state.dateError,
                 Toast.LENGTH_LONG
             ).show()
         }

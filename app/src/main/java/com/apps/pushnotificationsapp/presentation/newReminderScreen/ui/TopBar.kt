@@ -30,7 +30,7 @@ fun Header(
             onCloseScreen()
         }
         LogoText(modifier = Modifier)
-        LaunchedEffect(key1 = state.isSaved, key2 = state.isDateError) {
+        LaunchedEffect(key1 = state.isSaved, key2 = state.dateError) {
             if(state.isSaved==true){
                 onCloseScreen()
             }

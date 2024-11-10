@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">PushNotificationsApp</string>
+    <string name="reminders_notification_channel_id">reminder_channel</string>
+    <string name="edit">Edit…</string>
+    <string name="delete">Delete…</string>
+    <string name="testreminder">TestReminder</string>
+    <string name="add_task">Add Task</string>
+    <string name="make_your_own_reminder">Make your own Reminder.</string>
+    <string name="insert_title">Insert Title</string>
+    <string name="title">Title</string>
+    <string name="repeat">Repeat</string>
+    <string name="time">Time</string>
+    <string name="calendar">Calendar</string>
+    <string name="_00">00</string>
+    <string name="dd">dd</string>
+    <string name="mm">mm</string>
+    <string name="yyyy">yyyy</string>
 </resources>

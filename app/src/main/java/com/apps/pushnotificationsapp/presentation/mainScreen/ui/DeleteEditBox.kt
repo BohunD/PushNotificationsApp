@@ -29,6 +29,7 @@ import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -150,7 +151,7 @@ private fun ChooseActionBox(
             .width(IntrinsicSize.Min)
     ) {
         Text(
-            "Edit...",
+            stringResource(id = R.string.edit),
             fontFamily = alteHaasGroteskFont,
             modifier = Modifier
                 .fillMaxWidth()
@@ -164,7 +165,7 @@ private fun ChooseActionBox(
 
         )
         Text(
-            "Delete...",
+            text = stringResource(R.string.delete),
             fontFamily = alteHaasGroteskFont,
             color = colorResource(id = R.color.red_text),
             modifier = Modifier

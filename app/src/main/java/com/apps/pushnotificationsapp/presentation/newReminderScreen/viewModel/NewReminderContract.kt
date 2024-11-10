@@ -1,6 +1,7 @@
 package com.apps.pushnotificationsapp.presentation.newReminderScreen.viewModel
 
 import androidx.compose.runtime.Immutable
+import com.apps.pushnotificationsapp.domain.model.RepeatMode
 
 interface NewReminderContract {
 
@@ -12,14 +13,14 @@ interface NewReminderContract {
         val currentDay: String = "",
         val currentMonth: String = "",
         val currentYear: String = "",
-        val currentRepeatMode: String = "Once",
+        val currentRepeatMode: String = RepeatMode.ONCE.displayName,
 
         val isHourError: Boolean = false,
         val isMinuteError: Boolean = false,
         val isDayError: Boolean = false,
         val isMonthError: Boolean = false,
         val isYearError: Boolean = false,
-        val isDateError: Boolean? = null,
+        val dateError: String? = null,
         val isSaved: Boolean? = null,
 
         val reminderId: Int = -1
@@ -49,4 +50,5 @@ interface NewReminderContract {
 
     sealed interface Effect {
     }
+
 }

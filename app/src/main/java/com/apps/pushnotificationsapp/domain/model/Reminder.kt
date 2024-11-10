@@ -7,7 +7,9 @@ data class Reminder(
     val title: String,
     val time: String,
     val date: String,
-    val repeatMode: String
+    val repeatMode: String,
+    val cancellationDate: String? = null,
+    val isCancelledToday: Boolean = false
 ) {
     fun toEntity(): ReminderEntity {
         return ReminderEntity(
@@ -15,7 +17,8 @@ data class Reminder(
             title = title,
             time = time,
             date = date,
-            repeatMode = repeatMode
+            repeatMode = repeatMode,
+            cancellationDate = cancellationDate
         )
     }
 
@@ -26,7 +29,9 @@ data class Reminder(
                 title = entity.title,
                 time = entity.time,
                 date = entity.date,
-                repeatMode = entity.repeatMode
+                repeatMode = entity.repeatMode,
+                cancellationDate = entity.cancellationDate,
+                isCancelledToday = false
             )
         }
     }
