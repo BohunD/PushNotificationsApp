@@ -1,5 +1,6 @@
 package com.apps.pushnotificationsapp.presentation.mainScreen.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apps.pushnotificationsapp.domain.model.Reminder
@@ -50,15 +51,50 @@ class MainScreenViewModel @Inject constructor(
         updateUiState{copy(todayDate = today)}
         viewModelScope.launch(Dispatchers.IO) {
             val list = repository.getAllReminders().map { reminder ->
+                val formattedDate = formatDate(reminder.date)
+                val formattedTime = formatTime(reminder.time)
                 if (reminder.cancellationDate == today) {
-                    reminder.copy(isCancelledToday = true)
+                    reminder.copy(
+                        isCancelledToday = true,
+                        date = formattedDate,
+                        time = formattedTime
+                    )
                 } else {
-                    reminder.copy(cancellationDate = null)
+                    reminder.copy(
+                        cancellationDate = null,
+                        date = formattedDate,
+                        time = formattedTime
+                        )
                 }
             }
             withContext(Dispatchers.Main) {
                 updateUiState { copy(currentRemindersList = list) }
             }
+        }
+    }
+
+    private fun formatDate(date: String): String {
+        val parts = date.split("/")
+        if (parts.size != 3) return date
+
+        val day = String.format(Locale.getDefault(), "%02d", parts[0].toInt())
+        val month = String.format(Locale.getDefault(), "%02d", parts[1].toInt())
+        val year = parts[2]
+
+        return "$day/$month/$year"
+    }
+
+    private fun formatTime(time: String): String {
+        try {
+            val parts = time.split(":")
+            if (parts.size != 2) return time
+            val hour = String.format(Locale.getDefault(), "%02d", parts[0].toInt())
+            val minute = String.format(Locale.getDefault(), "%02d", parts[1].toInt())
+
+            return "$hour:$minute"
+        } catch (e: Exception) {
+            Log.e("Error formatTime:", e.message.toString())
+            return ""
         }
     }
 

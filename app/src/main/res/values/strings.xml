@@ -15,4 +15,6 @@
     <string name="dd">dd</string>
     <string name="mm">mm</string>
     <string name="yyyy">yyyy</string>
+    <string name="hurry_up_don_t_forget_your_task">Hurry up! Don’t forget your task :)</string>
+    <string name="reminder">Reminder</string>
 </resources>

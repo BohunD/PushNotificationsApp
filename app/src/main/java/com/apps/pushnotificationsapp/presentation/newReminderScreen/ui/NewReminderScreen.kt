@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.apps.pushnotificationsapp.presentation.newReminderScreen.ui.internalViews.Header
+import com.apps.pushnotificationsapp.presentation.newReminderScreen.ui.internalViews.ReminderInputForm
 import com.apps.pushnotificationsapp.presentation.newReminderScreen.viewModel.NewReminderContract
 import com.apps.pushnotificationsapp.presentation.newReminderScreen.viewModel.NewReminderViewModel
 import com.apps.videolibrary.mvi.use
@@ -45,7 +47,7 @@ fun NewReminderScreen(id: Int, onCloseScreen: () -> Unit) {
     ) {
         Header(onCloseScreen, event, state)
         Spacer(modifier = Modifier.weight(0.8f))
-        ReminderInputBox(state, event)
+        ReminderInputForm(state, event)
         Spacer(modifier = Modifier.weight(1f))
     }
 }

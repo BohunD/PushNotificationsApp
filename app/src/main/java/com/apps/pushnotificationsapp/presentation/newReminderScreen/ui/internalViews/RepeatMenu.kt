@@ -1,4 +1,4 @@
-package com.apps.pushnotificationsapp.presentation.newReminderScreen.ui
+package com.apps.pushnotificationsapp.presentation.newReminderScreen.ui.internalViews
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,7 +38,11 @@ import com.apps.pushnotificationsapp.domain.model.RepeatMode
 
 @Composable
 fun RepeatMenu(
-    options: List<String> = listOf(RepeatMode.ONCE.displayName, RepeatMode.DAILY.displayName, RepeatMode.MON_TO_FRI.displayName),
+    options: List<String> = listOf(
+        RepeatMode.ONCE.displayName,
+        RepeatMode.DAILY.displayName,
+        RepeatMode.MON_TO_FRI.displayName
+    ),
     selectedOption: String,
     onOptionSelected: (String) -> Unit,
 ) {
@@ -47,12 +50,6 @@ fun RepeatMenu(
 
     var rowSize by remember { mutableStateOf(Size.Zero) }
 
-
-    val shapes = Shapes(
-        small = RoundedCornerShape(30.dp),
-        medium = RoundedCornerShape(bottomStart = 25.dp, bottomEnd = 25.dp),
-        large = RoundedCornerShape(30.dp)
-    )
     Box(modifier = Modifier
         .padding(top = 10.dp)
         .fillMaxWidth()
@@ -75,13 +72,19 @@ fun RepeatMenu(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(text = selectedOption, fontSize = 14.sp, color = Color.Black.copy(alpha = 0.5f))
-            Icon(painter = painterResource(id = R.drawable.ic_expand), contentDescription = null, tint = Color.Unspecified, modifier = Modifier.padding(end = 5.dp).size(16.dp))
+            Icon(
+                painter = painterResource(id = R.drawable.ic_expand),
+                contentDescription = null,
+                tint = Color.Unspecified,
+                modifier = Modifier
+                    .padding(end = 5.dp)
+                    .size(16.dp)
+            )
         }
-
 
         DropdownMenu(
             expanded = expanded,
-            shape = shapes.medium,
+            shape = RoundedCornerShape(bottomStart = 25.dp, bottomEnd = 25.dp),
             shadowElevation = 0.dp,
             containerColor = colorResource(id = R.color.gray_bg),
             onDismissRequest = { expanded = false },
@@ -90,27 +93,36 @@ fun RepeatMenu(
 
         ) {
             options.forEach { option ->
-                DropdownMenuItem(
-                    modifier = Modifier
-                        .padding(bottom = 8.dp)
-                        .height(27.dp)
-                        .fillMaxWidth(),
-                    contentPadding = PaddingValues(start = 15.dp, top = 2.dp),
-                    text = {
-                        Text(
-                            text = option,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W400,
-                            color = Color.Black.copy(alpha = 0.5f)
-                        )
-                    },
-                    onClick = {
-                        expanded = false
-                        onOptionSelected(option)
-                    }
-                )
+                RepeatDropdownMenuItem(option, onOptionSelected) { expanded = false }
             }
 
         }
     }
+}
+
+@Composable
+private fun RepeatDropdownMenuItem(
+    option: String,
+    onOptionSelected: (String) -> Unit,
+    onCollapse: () -> Unit,
+) {
+    DropdownMenuItem(
+        modifier = Modifier
+            .padding(bottom = 8.dp)
+            .height(27.dp)
+            .fillMaxWidth(),
+        contentPadding = PaddingValues(start = 15.dp, top = 2.dp),
+        text = {
+            Text(
+                text = option,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.W400,
+                color = Color.Black.copy(alpha = 0.5f)
+            )
+        },
+        onClick = {
+            onCollapse()
+            onOptionSelected(option)
+        }
+    )
 }

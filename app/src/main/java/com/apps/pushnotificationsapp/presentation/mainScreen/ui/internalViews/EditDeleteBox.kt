@@ -1,4 +1,4 @@
-package com.apps.pushnotificationsapp.presentation.mainScreen.ui
+package com.apps.pushnotificationsapp.presentation.mainScreen.ui.internalViews
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,14 +30,12 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import com.apps.pushnotificationsapp.R
+import com.apps.pushnotificationsapp.presentation.util.Typography.alteHaasGroteskFont
 import kotlin.math.min
 
 @Composable
@@ -140,9 +138,6 @@ private fun ChooseActionBox(
     onEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {
-    val alteHaasGroteskFont = FontFamily(
-        Font(R.font.alte_haas_grotesk_regular, FontWeight.W400),
-    )
     Column(
         modifier = modifier
             .padding(start = 55.dp, top = 20.dp)

@@ -36,13 +36,13 @@ object AppModule {
     }
 
 
+
+
     @Provides
     @Singleton
     fun provideBootReceiver(
-        notificationScheduler: NotificationScheduler,
-        repository: ReminderRepository,
     ): BootReceiver {
-        return BootReceiver(notificationScheduler,repository)
+        return BootReceiver()
     }
 
     @Provides

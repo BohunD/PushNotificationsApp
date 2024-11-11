@@ -7,7 +7,7 @@ interface MainScreenContract {
 
     @Immutable
     data class State(
-        val currentRemindersList: List<Reminder> = listOf(),
+        val currentRemindersList: List<Reminder>?=null,
         val todayDate: String = ""
     )
 

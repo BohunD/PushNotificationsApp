@@ -97,22 +97,26 @@ class NewReminderViewModel @Inject constructor(
             viewModelScope.launch(Dispatchers.IO) {
                 try {
                     if (reminderId != UNDEFINED_ID) {
-                        repository.updateReminder(Reminder(
-                            id = reminderId,
-                            title = currentTitle,
-                            time = time,
-                            date = date,
-                            repeatMode = currentRepeatMode
-                        ))
+                        repository.updateReminder(
+                            Reminder(
+                                id = reminderId,
+                                title = currentTitle,
+                                time = time,
+                                date = date,
+                                repeatMode = currentRepeatMode
+                            )
+                        )
                     } else {
                         val newId = System.currentTimeMillis().toInt()
-                        repository.addReminder(Reminder(
-                            id = newId,
-                            title = currentTitle,
-                            time = time,
-                            date = date,
-                            repeatMode = currentRepeatMode
-                        ))
+                        repository.addReminder(
+                            Reminder(
+                                id = newId,
+                                title = currentTitle,
+                                time = time,
+                                date = date,
+                                repeatMode = currentRepeatMode
+                            )
+                        )
                     }
                     withContext(Dispatchers.Main) {
                         updateUiState { copy(isSaved = true) }
@@ -238,14 +242,11 @@ class NewReminderViewModel @Inject constructor(
             updateUiState { copy(dateError = "Invalid hour.") }
         } else if (state.value.isMinuteError) {
             updateUiState { copy(dateError = "Invalid minute.") }
-        }else if (selectedDateTime < currentDateTime) {
+        } else if (selectedDateTime < currentDateTime) {
             updateUiState { copy(dateError = "Selected date and time must be in the future.") }
-        }
-        else {
+        } else {
             updateUiState { copy(dateError = null) }
         }
-
-
 
         if (state.value.dateError == null) {
             saveReminder()

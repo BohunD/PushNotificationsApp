@@ -18,19 +18,13 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-private const val EXTRA_TITLE = "title"
 
-private const val EXTRA_ID = "id"
 
-private const val EXTRA_DATE = "date"
-
-private const val EXTRA_TIME = "time"
-
-private const val EXTRA_REPEAT_MODE = "repeatMode"
+private const val REMINDER_CHANNEL = "REMINDER_CHANNEL"
 
 class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        val title = intent.getStringExtra(EXTRA_TITLE) ?: "Reminder"
+        val title = intent.getStringExtra(EXTRA_TITLE) ?: context.getString(R.string.reminder)
         val notificationId = intent.getIntExtra(EXTRA_ID, 0)
         val date = intent.getStringExtra(EXTRA_DATE)
         val time = intent.getStringExtra(EXTRA_TIME)
@@ -51,9 +45,9 @@ class NotificationReceiver : BroadcastReceiver() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notification = NotificationCompat.Builder(context, "REMINDER_CHANNEL")
+        val notification = NotificationCompat.Builder(context, REMINDER_CHANNEL)
             .setContentTitle(title)
-            .setContentText("Hurry up! Don’t forget your task :)")
+            .setContentText(context.getString(R.string.hurry_up_don_t_forget_your_task))
             .setSmallIcon(R.drawable.ic_notification)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingMainIntent)
@@ -74,7 +68,7 @@ class NotificationReceiver : BroadcastReceiver() {
         if (date != null && time != null) {
             val nextAlarmTime = Calendar.getInstance().apply {
                 this.time =
-                    SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).parse("$date $time")!!
+                    SimpleDateFormat(DATE_TIME_PATTERN, Locale.getDefault()).parse("$date $time")!!
             }
 
             when (repeatMode) {
@@ -97,7 +91,7 @@ class NotificationReceiver : BroadcastReceiver() {
                 putExtra(EXTRA_ID, notificationId)
                 putExtra(
                     EXTRA_DATE,
-                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(nextAlarmTime.time)
+                    SimpleDateFormat(DATE_PATTERN, Locale.getDefault()).format(nextAlarmTime.time)
                 )
                 putExtra(EXTRA_TIME, time)
                 putExtra(EXTRA_REPEAT_MODE, repeatMode)

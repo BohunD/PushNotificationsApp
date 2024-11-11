@@ -1,4 +1,4 @@
-package com.apps.pushnotificationsapp.presentation.newReminderScreen.ui
+package com.apps.pushnotificationsapp.presentation.newReminderScreen.ui.internalViews
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,8 +12,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.apps.pushnotificationsapp.presentation.newReminderScreen.viewModel.NewReminderContract
-import com.apps.pushnotificationsapp.presentation.mainScreen.ui.LogoText
 import com.apps.pushnotificationsapp.R
+import com.apps.pushnotificationsapp.presentation.mainScreen.ui.internalViews.LogoText
+
 @Composable
 fun Header(
     onCloseScreen: () -> Unit,
@@ -26,7 +27,7 @@ fun Header(
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        ReminderIcon(R.drawable.ic_cancel) {
+        IconRounded(R.drawable.ic_cancel) {
             onCloseScreen()
         }
         LogoText(modifier = Modifier)
@@ -35,7 +36,7 @@ fun Header(
                 onCloseScreen()
             }
         }
-        ReminderIcon(R.drawable.ic_okay) {
+        IconRounded(R.drawable.ic_okay) {
             event(NewReminderContract.Event.ValidateDate)
 
         }
@@ -44,7 +45,7 @@ fun Header(
 }
 
 @Composable
-fun ReminderIcon(iconRes: Int, onClick: () -> Unit) {
+fun IconRounded(iconRes: Int, onClick: () -> Unit) {
     Icon(
         painter = painterResource(id = iconRes),
         contentDescription = null,

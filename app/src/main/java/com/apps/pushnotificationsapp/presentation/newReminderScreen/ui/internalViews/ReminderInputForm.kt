@@ -1,4 +1,4 @@
-package com.apps.pushnotificationsapp.presentation.newReminderScreen.ui
+package com.apps.pushnotificationsapp.presentation.newReminderScreen.ui.internalViews
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -33,77 +33,61 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.apps.pushnotificationsapp.R
+import com.apps.pushnotificationsapp.presentation.util.Typography.alteHaasBoldFont
+import com.apps.pushnotificationsapp.presentation.util.Typography.alteHaasRegularFont
 import com.apps.pushnotificationsapp.presentation.newReminderScreen.viewModel.NewReminderContract
 
 
 @Composable
-fun ReminderInputBox(
+fun ReminderInputForm(
     state: NewReminderContract.State,
     event: (NewReminderContract.Event) -> Unit,
 ) {
-    val alteHaasBoldFont = FontFamily(
-        Font(R.font.alte_haas_grotesk_bold, FontWeight.W400),
-    )
-
     Box(
         modifier = Modifier
             .padding(horizontal = 35.dp)
             .fillMaxWidth()
     ) {
-        Box(
-            modifier = Modifier
-                .padding(top = 15.dp, start = 5.dp, end = 5.dp)
-                .shadow(
-                    elevation = 25.dp,
-                    shape = RoundedCornerShape(30.dp)
-                )
-                .background(Color.White)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
+
             Column(
                 modifier = Modifier
+                    .padding(top = 15.dp, start = 5.dp, end = 5.dp)
+                    .shadow(
+                        elevation = 25.dp,
+                        shape = RoundedCornerShape(30.dp)
+                    )
+                    .background(Color.White)
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
             ) {
-                val alteHaasRegularFont = FontFamily(
-                    Font(R.font.alte_haas_grotesk_regular, FontWeight.W400),
-                )
-
-                InputFormTextIcon(
+                TextFieldLabel(
                     text = stringResource(R.string.title),
                     iconId = R.drawable.ic_pen,
                     iconSize = 12.dp,
-                    fontFamily = alteHaasRegularFont
                 )
                 CustomTextField(
-                    Modifier
+                    modifier = Modifier
                         .fillMaxWidth(),
-                    state.currentTitle,
-                    13.sp,
+                    value = state.currentTitle,
+                    fontSize = 13.sp,
                     placeholder = stringResource(R.string.insert_title),
-                    KeyboardType.Text,
+                    keyboardType = KeyboardType.Text,
                     isError = false,
-                    validate = {}
                 ) { event(NewReminderContract.Event.SetCurrentTitle(it)) }
 
 
-                InputDateSection(alteHaasRegularFont, state, event)
+                InputDateSection(state = state, event = event)
 
-                InputFormTextIcon(
+                TextFieldLabel(
                     text = stringResource(R.string.repeat),
                     iconId = R.drawable.ic_repeat,
                     iconSize = 14.dp,
-                    fontFamily = alteHaasRegularFont
                 )
 
                 RepeatMenu(selectedOption = state.currentRepeatMode) {
@@ -115,7 +99,7 @@ fun ReminderInputBox(
                         .fillMaxWidth()
                 )
             }
-        }
+
         Box(
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -137,16 +121,15 @@ fun ReminderInputBox(
 }
 
 @Composable
-private fun InputFormTextIcon(
+private fun TextFieldLabel(
     text: String,
     iconId: Int,
     iconSize: Dp,
-    fontFamily: FontFamily,
 ) {
 
     Row(modifier = Modifier.padding(top = 25.dp), verticalAlignment = Alignment.Top) {
         Text(
-            text = text, fontFamily = fontFamily,
+            text = text, fontFamily = alteHaasRegularFont,
             fontSize = 18.sp,
             color = colorResource(id = R.color.dark_text),
         )
@@ -169,7 +152,7 @@ private fun CustomTextField(
     placeholder: String,
     keyboardType: KeyboardType,
     isError: Boolean,
-    validate: () -> Unit,
+    validate: () -> Unit = {},
     onValueChange: (String) -> Unit,
 ) {
     var isFocused by remember { mutableStateOf(false) }
@@ -188,6 +171,7 @@ private fun CustomTextField(
 
             BasicTextField(
                 value = value,
+                maxLines = 1,
                 keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
                 onValueChange = {
                     onValueChange(it)
@@ -220,7 +204,6 @@ private fun CustomTextField(
 
 @Composable
 private fun InputDateSection(
-    alteHaasRegularFont: FontFamily,
     state: NewReminderContract.State,
     event: (NewReminderContract.Event) -> Unit,
 ) {
@@ -230,106 +213,119 @@ private fun InputDateSection(
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Column {
-            InputFormTextIcon(
-                text = stringResource(R.string.time),
-                iconId = R.drawable.ic_time,
-                15.dp,
-                alteHaasRegularFont
-            )
-            Row(verticalAlignment = Alignment.Bottom) {
-                CustomTextField(
-                    modifier = Modifier.width(IntrinsicSize.Min),
-                    value = state.currentHour,
-                    fontSize = 18.sp,
-                    placeholder = stringResource(R.string._00),
-                    keyboardType = KeyboardType.Number,
-                    isError = state.isHourError,
-                    validate = { event(NewReminderContract.Event.ValidateHour) }
-                ) {
-                    event(NewReminderContract.Event.SetCurrentHour(it))
-                }
-                Text(
-                    text = ":",
-                    fontFamily = alteHaasRegularFont,
-                    color = Color.Black.copy(alpha = 0.5f),
-                    fontSize = 18.sp,
-                    modifier = Modifier.padding(horizontal = 6.dp)
-                )
-                CustomTextField(
-                    modifier = Modifier.width(IntrinsicSize.Min),
-                    value = state.currentMinute,
-                    fontSize = 18.sp,
-                    placeholder = stringResource(R.string._00),
-                    keyboardType = KeyboardType.Number,
-                    isError = state.isMinuteError,
-                    validate = { event(NewReminderContract.Event.ValidateMinute) }
-                ) { event(NewReminderContract.Event.SetCurrentMinute(it)) }
+        InputTimeDataSection(state, event)
+        InputCalendarDataSection(state, event)
+    }
+}
 
-
-            }
-        }
-
-        Column {
-            InputFormTextIcon(
-                text = stringResource(R.string.calendar),
-                iconId = R.drawable.ic_calendar,
-                16.dp,
-                alteHaasRegularFont
-            )
-            Row(
-                verticalAlignment = Alignment.Bottom,
-                modifier = Modifier.padding(top = 2.dp)
+@Composable
+private fun InputTimeDataSection(
+    state: NewReminderContract.State,
+    event: (NewReminderContract.Event) -> Unit,
+) {
+    Column {
+        TextFieldLabel(
+            text = stringResource(R.string.time),
+            iconId = R.drawable.ic_time,
+            15.dp,
+        )
+        Row(verticalAlignment = Alignment.Bottom) {
+            CustomTextField(
+                modifier = Modifier.width(IntrinsicSize.Min),
+                value = state.currentHour,
+                fontSize = 18.sp,
+                placeholder = stringResource(R.string._00),
+                keyboardType = KeyboardType.Number,
+                isError = state.isHourError,
+                validate = { event(NewReminderContract.Event.ValidateHour) }
             ) {
-                CustomTextField(
-                    modifier = Modifier.width(38.dp),
-                    value = state.currentDay,
-                    fontSize = 16.sp,
-                    placeholder = stringResource(R.string.dd),
-                    keyboardType = KeyboardType.Number,
-                    isError = state.isDayError,
-                    validate = { event(NewReminderContract.Event.ValidateDay) }
-                ) {
-                    event(NewReminderContract.Event.SetCurrentDay(it))
-                }
-                Text(
-                    text = ":",
-                    fontFamily = alteHaasRegularFont,
-                    color = Color.Black.copy(alpha = 0.5f),
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(horizontal = 6.dp)
-                )
-                CustomTextField(
-                    modifier = Modifier.width(38.dp),
-                    value = state.currentMonth,
-                    fontSize = 16.sp,
-                    placeholder = stringResource(R.string.mm),
-                    keyboardType = KeyboardType.Number,
-                    isError = state.isMonthError,
-                    validate = { event(NewReminderContract.Event.ValidateMonth) }
-                ) {
-                    event(NewReminderContract.Event.SetCurrentMonth(it))
-                }
-                Text(
-                    text = ":",
-                    fontFamily = alteHaasRegularFont,
-                    color = Color.Black.copy(alpha = 0.5f),
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(horizontal = 6.dp)
-                )
-                CustomTextField(
-                    modifier = Modifier.width(50.dp),
-                    value = state.currentYear,
-                    fontSize = 16.sp,
-                    placeholder = stringResource(R.string.yyyy),
-                    keyboardType = KeyboardType.Number,
-                    isError = state.isYearError,
-                    validate = { event(NewReminderContract.Event.ValidateYear) }
-                ) {
-                    event(NewReminderContract.Event.SetCurrentYear(it))
-                }
-
+                event(NewReminderContract.Event.SetCurrentHour(it))
             }
+            Text(
+                text = ":",
+                fontFamily = alteHaasRegularFont,
+                color = Color.Black.copy(alpha = 0.5f),
+                fontSize = 18.sp,
+                modifier = Modifier.padding(horizontal = 6.dp)
+            )
+            CustomTextField(
+                modifier = Modifier.width(IntrinsicSize.Min),
+                value = state.currentMinute,
+                fontSize = 18.sp,
+                placeholder = stringResource(R.string._00),
+                keyboardType = KeyboardType.Number,
+                isError = state.isMinuteError,
+                validate = { event(NewReminderContract.Event.ValidateMinute) }
+            ) { event(NewReminderContract.Event.SetCurrentMinute(it)) }
+
+
+        }
+    }
+}
+
+@Composable
+private fun InputCalendarDataSection(
+    state: NewReminderContract.State,
+    event: (NewReminderContract.Event) -> Unit,
+) {
+    Column {
+        TextFieldLabel(
+            text = stringResource(R.string.calendar),
+            iconId = R.drawable.ic_calendar,
+            16.dp,
+        )
+        Row(
+            verticalAlignment = Alignment.Bottom,
+            modifier = Modifier.padding(top = 2.dp)
+        ) {
+            CustomTextField(
+                modifier = Modifier.width(38.dp),
+                value = state.currentDay,
+                fontSize = 16.sp,
+                placeholder = stringResource(R.string.dd),
+                keyboardType = KeyboardType.Number,
+                isError = state.isDayError,
+                validate = { event(NewReminderContract.Event.ValidateDay) }
+            ) {
+                event(NewReminderContract.Event.SetCurrentDay(it))
+            }
+            Text(
+                text = ":",
+                fontFamily = alteHaasRegularFont,
+                color = Color.Black.copy(alpha = 0.5f),
+                fontSize = 16.sp,
+                modifier = Modifier.padding(horizontal = 6.dp)
+            )
+            CustomTextField(
+                modifier = Modifier.width(38.dp),
+                value = state.currentMonth,
+                fontSize = 16.sp,
+                placeholder = stringResource(R.string.mm),
+                keyboardType = KeyboardType.Number,
+                isError = state.isMonthError,
+                validate = { event(NewReminderContract.Event.ValidateMonth) }
+            ) {
+                event(NewReminderContract.Event.SetCurrentMonth(it))
+            }
+            Text(
+                text = ":",
+                fontFamily = alteHaasRegularFont,
+                color = Color.Black.copy(alpha = 0.5f),
+                fontSize = 16.sp,
+                modifier = Modifier.padding(horizontal = 6.dp)
+            )
+            CustomTextField(
+                modifier = Modifier.width(50.dp),
+                value = state.currentYear,
+                fontSize = 16.sp,
+                placeholder = stringResource(R.string.yyyy),
+                keyboardType = KeyboardType.Number,
+                isError = state.isYearError,
+                validate = { event(NewReminderContract.Event.ValidateYear) }
+            ) {
+                event(NewReminderContract.Event.SetCurrentYear(it))
+            }
+
         }
     }
 }
