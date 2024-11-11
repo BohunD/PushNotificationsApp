@@ -80,6 +80,7 @@ fun Modifier.popUpBox(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
+                    .background(Color.White.copy(alpha = 0.7f))
                     .clickable(
                         onClick = {
                             onDismiss()

@@ -68,7 +68,7 @@ fun MainScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .then(if (shouldBlur) Modifier.blur(3.dp) else Modifier),
+            .then(if (shouldBlur) Modifier.blur(2.dp) else Modifier),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         state.currentRemindersList?.let {
