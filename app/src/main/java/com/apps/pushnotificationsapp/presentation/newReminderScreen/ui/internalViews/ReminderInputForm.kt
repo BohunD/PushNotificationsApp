@@ -51,7 +51,7 @@ fun ReminderInputForm(
 ) {
     Box(
         modifier = Modifier
-            .padding(horizontal = 35.dp)
+            .padding(start = 25.dp, end = 25.dp )
             .fillMaxWidth()
     ) {
 
@@ -64,7 +64,7 @@ fun ReminderInputForm(
                     )
                     .background(Color.White)
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
+                    .padding(horizontal = 40.dp, vertical = 15.dp)
             ) {
                 TextFieldLabel(
                     text = stringResource(R.string.title),
